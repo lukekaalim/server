@@ -3,12 +3,14 @@ const { expectAll, emojiReporter, booleanReporter } = require('@lukekaalim/test'
 
 const { expectNoMatchingRoutes, expectMatchFirstRoute } = require('./src/listener.test');
 const { expectRestEndpoint } = require('./src/route.test');
+const { expectIntegration } = require('./test/integration');
 
 const testLibrary = async () => {
   const expectation = expectAll('@lukekaalim/server', [
     expectNoMatchingRoutes,
     expectMatchFirstRoute,
     expectRestEndpoint,
+    expectIntegration,
   ]);
   const assertion = await expectation.test();
   console.log(emojiReporter(assertion));
