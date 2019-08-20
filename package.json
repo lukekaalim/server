@@ -1,0 +1,18 @@
+{
+  "name": "@lukekaalim/server",
+  "version": "0.0.1",
+  "description": "Simple utility library for defining a node server listener from a series of routes",
+  "main": "src/index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "node test"
+  },
+  "author": "luke kaalim (luke@kaal.im)",
+  "license": "MIT",
+  "devDependencies": {
+    "@lukekaalim/test": "^4.6.0",
+    "nyc": "^14.1.1"
+  }
+}
