@@ -4,6 +4,15 @@ import type { Readable, Writable } from 'stream';
 */
 
 /*::
+export type HTTPMethod =
+ | 'GET'
+ | 'POST'
+ | 'DELETE'
+ | 'PUT'
+ | 'HEAD'
+ | 'OPTIONS'
+ | 'PATCH';
+
 export type HTTPIncomingRequest = Readable & {
   rawHeaders: Array<string>,
   url: string,
