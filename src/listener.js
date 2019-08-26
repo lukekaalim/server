@@ -18,9 +18,11 @@ const createListener = (
   const listener = (req, res) => {
     const currentRoute = routes.find(route => route.test(req));
     if (!currentRoute) {
-      throw new Error('No Route Found');
+      res.writeHead(404);
+      res.end();
+    } else {
+      currentRoute.handler(req, res);
     }
-    currentRoute.handler(req, res);
   };
   return listener;
 };

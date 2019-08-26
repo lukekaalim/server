@@ -1,6 +1,6 @@
 // @flow strict
 const {
-  createRouteFromRESTEndpoint,
+  onGet,
   createRoute,
   ok,
   notFound,
@@ -32,11 +32,9 @@ const main = () => {
     }
     return ok(JSON.stringify(user));
   };
-  const userRoute = createRouteFromRESTEndpoint({ path: '/users', method: 'GET', handler: userHandler });
-  const notFoundRoute = createRoute(() => true, (_, res) => { res.writeHead(404); res.end(); });
+  const userRoute = onGet('/users', userHandler);
   const routes = [
     userRoute,
-    notFoundRoute,
   ];
   const listener = createListener(routes);
   const server = createServer(listener);

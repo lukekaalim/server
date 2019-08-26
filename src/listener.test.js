@@ -1,13 +1,25 @@
 // @flow strict
 const { Writable, Readable } = require('stream');
 const { createListener } = require('./listener');
-const { assert, expect, expectToThrow } = require('@lukekaalim/test');
+const { assert, expect } = require('@lukekaalim/test');
 const { MockIncomingRequest, MockOutgoingResponse } = require('./utils.test');
 
-const expectNoMatchingRoutes = expectToThrow('Expect the Listener to throw an error if no routes match', () => {
+const expectNoMatchingRoutes = expect(async () => {
+  let statusCode = null;
+  let done = false;
+  class Mock404Response extends MockOutgoingResponse {
+    constructor() {
+      super();
+    }
+    writeHead(status) {
+      statusCode = status;
+    }
+  }
+
   const nonMatchingRoute = { test: () => false, handler: async () => {} };
   const listener = createListener([nonMatchingRoute]);
-  listener(new MockIncomingRequest('/'), new MockOutgoingResponse());
+  listener(new MockIncomingRequest('/'), new Mock404Response());
+  return assert('Expect to throw a 404 is there are no matching routes', statusCode === 404)
 });
 
 const expectMatchFirstRoute = expect(() => {
