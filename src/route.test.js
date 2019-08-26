@@ -1,16 +1,16 @@
 // @flow strict
 const { expect, assert, expectAll } = require('@lukekaalim/test');
-const { createRouteFromRESTEndpoint } = require('./route');
+const { onGet } = require('./rest');
 const { MockIncomingRequest, MockOutgoingResponse } = require('./utils.test');
 const { ok } = require('./rest');
 
 const expectMatchRoute = (description, endpoint, request) => expect(() => {
-  const route = createRouteFromRESTEndpoint(endpoint);
+  const route = onGet(endpoint.path, endpoint.handler);
   return assert(description, route.test(request));
 });
 
 const expectMissRoute = (description, endpoint, request) => expect(() => {
-  const route = createRouteFromRESTEndpoint(endpoint);
+  const route = onGet(endpoint.path, endpoint.handler);
   return assert(description, !route.test(request));
 });
 
@@ -34,8 +34,7 @@ const expectRestMismatchedMethod = expectMissRoute(
 
 const expectRestCompileHeadersIntoMap = expect(async () => {
   let headers = new Map();
-  const endpoint = { path: '/expected-path', method: 'GET', handler: async (q, h) => { headers = h; return ok(); } };
-  const route = createRouteFromRESTEndpoint(endpoint);
+  const route = onGet('/expected-path', async (q, h) => { headers = h; return ok(); });
   const exampleHeaders = ['Example-Header', 'Header-Value'];
 
   await route.handler(new MockIncomingRequest('/expected-path', 'GET', '', exampleHeaders), new MockOutgoingResponse())
