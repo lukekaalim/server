@@ -9,7 +9,7 @@ const createResponseConstructor = (
   status/*: number*/,
 ) => (
   body/*: string*/ = '',
-  headers/*: Map<string, string>*/ = new Map(),
+  headers/*: Array<[string, string]>*/ = [],
 ) => ({
   status,
   headers,
@@ -56,11 +56,11 @@ const createRESTRouteConstructor = (
     body?: string,
   ) => Promise<{
     status: number,
-    headers: Map<string, string>,
+    headers: Array<[string, string]>,
     body: string,
   }> | {
     status: number,
-    headers: Map<string, string>,
+    headers: Array<[string, string]>,
     body: string,
   }*/,
 ) => {
@@ -75,7 +75,7 @@ const createRESTRouteConstructor = (
       const query = new Map(new URL(inc.url, 'https://www.example.com').searchParams.entries());
       const body = await readStream(inc);
       const response = await onRoute(query, headers, body);
-      res.writeHead(response.status, Object.fromEntries(response.headers.entries()));
+      res.writeHead(response.status, Object.fromEntries(response.headers));
       res.write(response.body);
     } finally {
       res.end();
