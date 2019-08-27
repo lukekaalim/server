@@ -19,6 +19,12 @@ const { createListener, ok, createGETRoute } = require('@lukekaalim/server');
 const homeRoute = createGETRoute('/home', () => ok('This is the home page'));
 const usersRoute = createGETRoute('/users', () => ok(JSON.stringify([{ name: 'dave' }])));
 
+// 1.1 Make sure they return the correct headers
+const contentRoute = createGETRoute('/content', () => ok(
+  JSON.stringify([{ name: 'dave' }]),
+  new Map(['Content-Type', 'application/json']),
+));
+
 const runServer = () => {
   // 2. Combine Routes to form a Listener
   const listener = createListener([homeRoute, usersRoute]);

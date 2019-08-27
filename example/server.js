@@ -30,7 +30,7 @@ const main = () => {
     if (!user) {
       return notFound();
     }
-    return ok(JSON.stringify(user));
+    return ok(JSON.stringify(user), new Map([['Content-Type', 'application/json']]));
   };
   const userRoute = createGETRoute('/users', userHandler);
   const routes = [
