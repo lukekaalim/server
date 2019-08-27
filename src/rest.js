@@ -5,9 +5,8 @@ import type { Route } from './route';
 import type { HTTPMethod } from './http';
 */
 
-const createResponseConstructor = (
+const createRESTResponse = (
   status/*: number*/,
-) => (
   body/*: string*/ = '',
   headers/*: Array<[string, string]>*/ = [],
 ) => ({
@@ -15,20 +14,6 @@ const createResponseConstructor = (
   headers,
   body,
 });
-
-const ok =              createResponseConstructor(200);
-const notFound =        createResponseConstructor(404);
-const badRequest =      createResponseConstructor(400);
-const unauthenticated = createResponseConstructor(401);
-const serverError =     createResponseConstructor(500);
-
-const responseConstructor = {
-  ok,
-  notFound,
-  badRequest,
-  unauthenticated,
-  serverError,
-};
 
 const toPairedTuples = /*:: <T>*/(list/*: Array<T>*/)/*: Array<[T, T]>*/ => {
   const tuples = [];
@@ -46,9 +31,8 @@ const readStream = (stream) => new Promise((resolve, reject) => {
   stream.on('end', () => resolve(chunks.join('')));
 });
 
-const createRESTRouteConstructor = (
+const createRESTRoute = (
   method/*: HTTPMethod*/,
-) => (
   path/*: string*/,
   onRoute/*: (
     query: Map<string, string>,
@@ -82,25 +66,7 @@ const createRESTRouteConstructor = (
   return createRoute(test, handler);
 }
 
-const createGETRoute =     createRESTRouteConstructor('GET');
-const createPOSTRoute =    createRESTRouteConstructor('POST');
-const createDELETERoute =  createRESTRouteConstructor('DELETE');
-const createPUTRoute =     createRESTRouteConstructor('PUT');
-const createHEADRoute =    createRESTRouteConstructor('HEAD');
-const createOPTIONSRoute = createRESTRouteConstructor('OPTIONS');
-const createPATCHRoute =   createRESTRouteConstructor('PATCH');
-
-const routeConstructors = {
-  createGETRoute,
-  createPOSTRoute,
-  createDELETERoute,
-  createPUTRoute,
-  createHEADRoute,
-  createOPTIONSRoute,
-  createPATCHRoute,
-};
-
 module.exports = {
-  ...routeConstructors,
-  ...responseConstructor,
+  createRESTRoute,
+  createRESTResponse,
 };

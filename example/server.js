@@ -1,13 +1,15 @@
 // @flow strict
 const {
-  createGETRoute,
+  createRESTRoute,
   createRoute,
-  ok,
-  notFound,
-  badRequest,
+  createRESTResponse,
   createListener,
 } = require('..');
 const { createServer } = require('http');
+
+const ok = (body, headers) => createRESTResponse(200, body, headers);
+const badRequest = () => createRESTResponse(400);
+const notFound = () => createRESTResponse(404);
 
 const users = new Map/*:: <number, { name: string }>*/([
   [0, { name: 'luke' }],
@@ -32,7 +34,7 @@ const main = () => {
     }
     return ok(JSON.stringify(user), [['Content-Type', 'application/json']]);
   };
-  const userRoute = createGETRoute('/users', userHandler);
+  const userRoute = createRESTRoute('GET', '/users', userHandler);
   const routes = [
     userRoute,
   ];
