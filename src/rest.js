@@ -70,16 +70,13 @@ const createRESTRouteConstructor = (
     return pathMatches && methodMatches;
   };
   const handler = async (inc, res) => {
-    try {
-      const headers = new Map(toPairedTuples(inc.rawHeaders));
-      const query = new Map(new URL(inc.url, 'https://www.example.com').searchParams.entries());
-      const body = await readStream(inc);
-      const response = await onRoute(query, headers, body);
-      res.writeHead(response.status, Object.fromEntries(response.headers));
-      res.write(response.body);
-    } finally {
-      res.end();
-    }
+    const headers = new Map(toPairedTuples(inc.rawHeaders));
+    const query = new Map(new URL(inc.url, 'https://www.example.com').searchParams.entries());
+    const body = await readStream(inc);
+    const response = await onRoute(query, headers, body);
+    res.writeHead(response.status, Object.fromEntries(response.headers));
+    res.write(response.body);
+    res.end();
   };
 
   return createRoute(test, handler);

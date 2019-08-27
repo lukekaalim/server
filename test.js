@@ -1,7 +1,7 @@
 // @flow strict
 const { expectAll, emojiReporter, booleanReporter } = require('@lukekaalim/test');
 
-const { expectNoMatchingRoutes, expectMatchFirstRoute } = require('./src/listener.test');
+const { expectNoMatchingRoutes, expectMatchFirstRoute, expectDefaultHandleOnRouteThrow } = require('./src/listener.test');
 const { expectRestEndpoint } = require('./src/route.test');
 const { expectIntegration } = require('./test/integration.test');
 
@@ -11,6 +11,7 @@ const testLibrary = async () => {
     expectMatchFirstRoute,
     expectRestEndpoint,
     expectIntegration,
+    expectDefaultHandleOnRouteThrow,
   ]);
   const assertion = await expectation.test();
   console.log(emojiReporter(assertion));

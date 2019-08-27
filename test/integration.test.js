@@ -32,7 +32,7 @@ const withServer = /*:: <T>*/(
 const expectIntegration = expect(async () => {
   const route = createRoute(
     () => true,
-    (_, res) => void res.end('The End')
+    async (_, res) => void res.end('The End')
   );
   const listener = createListener([route]);
   const withListenerServer = withServer(listener);
