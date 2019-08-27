@@ -13,11 +13,11 @@ npm i @lukekaalim/server
 ```javascript
 
 const { createServer } = require('http');
-const { createListener, ok, onGet } = require('@lukekaalim/server');
+const { createListener, ok, createGETRoute } = require('@lukekaalim/server');
 
 // 1. Make some Routes!
-const homeRoute = onGet('/home', () => ok('This is the home page'));
-const usersRoute = onGet('/users', () => ok(JSON.stringify([{ name: 'dave' }])));
+const homeRoute = createGETRoute('/home', () => ok('This is the home page'));
+const usersRoute = createGETRoute('/users', () => ok(JSON.stringify([{ name: 'dave' }])));
 
 const runServer = () => {
   // 2. Combine Routes to form a Listener

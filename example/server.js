@@ -1,6 +1,6 @@
 // @flow strict
 const {
-  onGet,
+  createGETRoute,
   createRoute,
   ok,
   notFound,
@@ -17,7 +17,7 @@ const users = new Map/*:: <number, { name: string }>*/([
 ]);
 
 const main = () => {
-  const userHandler = async (query) => {
+  const userHandler = (query) => {
     const queryId = query.get('id');
     if (!queryId) {
       return badRequest();
@@ -32,7 +32,7 @@ const main = () => {
     }
     return ok(JSON.stringify(user));
   };
-  const userRoute = onGet('/users', userHandler);
+  const userRoute = createGETRoute('/users', userHandler);
   const routes = [
     userRoute,
   ];

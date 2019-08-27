@@ -5,14 +5,6 @@ import type { Route } from './route';
 import type { HTTPMethod } from './http';
 */
 
-/*::
-export type RESTRequest = {
-  query: Map<string, string>,
-  headers: Map<string, string>,
-  body?: string,
-};
-*/
-
 const createResponseConstructor = (
   status/*: number*/,
 ) => (
@@ -66,7 +58,11 @@ const createRESTRouteConstructor = (
     status: number,
     headers: Map<string, string>,
     body: string,
-  }>*/,
+  }> | {
+    status: number,
+    headers: Map<string, string>,
+    body: string,
+  }*/,
 ) => {
   const test = (inc) => {
     const pathMatches = path === new URL(inc.url, 'https://www.example.com').pathname;
@@ -89,22 +85,22 @@ const createRESTRouteConstructor = (
   return createRoute(test, handler);
 }
 
-const onGet =     createRESTRouteConstructor('GET');
-const onPost =    createRESTRouteConstructor('POST');
-const onDelete =  createRESTRouteConstructor('DELETE');
-const onPut =     createRESTRouteConstructor('PUT');
-const onHead =    createRESTRouteConstructor('HEAD');
-const onOptions = createRESTRouteConstructor('OPTIONS');
-const onPatch =   createRESTRouteConstructor('PATCH');
+const createGETRoute =     createRESTRouteConstructor('GET');
+const createPOSTRoute =    createRESTRouteConstructor('POST');
+const createDELETERoute =  createRESTRouteConstructor('DELETE');
+const createPUTRoute =     createRESTRouteConstructor('PUT');
+const createHEADRoute =    createRESTRouteConstructor('HEAD');
+const createOPTIONSRoute = createRESTRouteConstructor('OPTIONS');
+const createPATCHRoute =   createRESTRouteConstructor('PATCH');
 
 const routeConstructors = {
-  onGet,
-  onPost,
-  onDelete,
-  onPut,
-  onHead,
-  onOptions,
-  onPatch,
+  createGETRoute,
+  createPOSTRoute,
+  createDELETERoute,
+  createPUTRoute,
+  createHEADRoute,
+  createOPTIONSRoute,
+  createPATCHRoute,
 };
 
 module.exports = {
