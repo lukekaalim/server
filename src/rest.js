@@ -67,7 +67,7 @@ const createRESTRouteConstructor = (
     headers: Map<string, string>,
     body: string,
   }>*/,
-)/*: Route*/ => {
+) => {
   const test = (inc) => {
     const pathMatches = path === new URL(inc.url, 'https://www.example.com').pathname;
     const methodMatches = method === inc.method;
