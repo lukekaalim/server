@@ -4,6 +4,7 @@
 export type {
   HTTPIncomingRequest,
   HTTPOutgoingResponse,
+  HTTPMethod,
 } from './http';
 
 export type {
