@@ -43,7 +43,7 @@ const createListener = (
   }, new Map());
 
   const listener = async (inc, res) => {
-    const url = new URL(inc.url, 'example.com');
+    const url = new URL(inc.url, 'http://example.com');
     const methodMap = pathMap.get(url.pathname);
     const request = await readRequest(url, inc);
     if (!methodMap) {
@@ -61,7 +61,7 @@ const createListener = (
 };
 
 const readRequest = async (url/*: URL*/, httpReq/*: HTTPIncomingRequest*/)/*: Promise<RouteRequest>*/ => {
-  const headers = new Map(toPairedTuples(httpReq.rawHeaders));
+  const headers = new Map(Object.entries(httpReq.headers));
   const query = new Map(url.searchParams.entries());
   const body = await readStream(httpReq);
   return { query, headers, body };
