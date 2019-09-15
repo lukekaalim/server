@@ -1,6 +1,6 @@
 {
   "name": "@lukekaalim/server",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Simple utility library for defining a node server listener from a series of routes",
   "main": "src/index.js",
   "directories": {
