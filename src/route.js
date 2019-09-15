@@ -25,3 +25,17 @@ export type Route = {
   handler: RouteHandler,
 };
 */
+
+const createRoute = (
+  path/*: string*/,
+  method/*: HTTPMethod*/,
+  handler/*: RouteHandler*/
+)/*: Route*/ => ({
+  path,
+  method,
+  handler,
+});
+
+module.exports = {
+  createRoute,
+};
