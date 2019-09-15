@@ -16,17 +16,14 @@ const users = new Map/*:: <number, { name: string }>*/([
 const main = () => {
   const userHandler = ({ query }) => {
     const queryId = query.get('id');
-    if (!queryId) {
+    if (!queryId)
       return badRequest();
-    }
     const id = parseInt(queryId, 10);
-    if (isNaN(id)) {
+    if (isNaN(id))
       return badRequest();
-    }
     const user = users.get(id);
-    if (!user) {
+    if (!user)
       return notFound();
-    }
     return ok(JSON.stringify(user), { 'Content-Type': 'application/json' });
   };
   const userRoute = { method: 'GET', path: '/users', handler: userHandler };
