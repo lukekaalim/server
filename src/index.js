@@ -1,20 +1,15 @@
 // @flow strict
 
 /*::
-export type {
-  HTTPIncomingRequest,
-  HTTPOutgoingResponse,
-  HTTPMethod,
-} from './http';
-
-export type {
-  Route
-} from './route';
+export type * from './route';
+export type * from './http';
+export type * from './responses';
+export type * from './listener';
 */
 
 module.exports = {
   ...require('./listener'),
-  ...require('./rest'),
   ...require('./route'),
   ...require('./http'),
+  ...require('./responses'),
 };

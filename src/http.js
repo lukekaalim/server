@@ -14,7 +14,7 @@ export type HTTPMethod =
  | 'PATCH';
 
 export type HTTPIncomingRequest = Readable & {
-  rawHeaders: Array<string>,
+  headers: { [header: string]: string },
   url: string,
   method: string
 };
