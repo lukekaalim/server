@@ -5,6 +5,7 @@ export type * from './route';
 export type * from './http';
 export type * from './responses';
 export type * from './listener';
+export type * from './rest';
 */
 
 module.exports = {
@@ -12,4 +13,5 @@ module.exports = {
   ...require('./route'),
   ...require('./http'),
   ...require('./responses'),
+  ...require('./rest'),
 };

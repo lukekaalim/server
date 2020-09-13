@@ -1,38 +1,51 @@
 // @flow strict
 const {
-  ok, badRequest, notFound,
+  ok, badRequest, notFound, noContent, created,
   createListener,
-  writeResponse,
+  resource,
 } = require('..');
 const { createServer } = require('http');
 
-const users = new Map/*:: <number, { name: string }>*/([
-  [0, { name: 'luke' }],
-  [1, { name: 'tala'}],
-  [2, { name: 'alex' }],
-  [3, { name: 'nicky' }],
-]);
+let userIdCounter = 4;
+const users = {
+  '1': { name: 'luke', age: 25 },
+  '2': { name: 'tala', age: 23 },
+  '3': { name: 'alex', age: 21 },
+  '4': { name: 'nicky', age: 18 },
+};
 
 const main = () => {
-  const userHandler = ({ query }) => {
-    const queryId = query.get('id');
-    if (!queryId)
-      return badRequest();
-    const id = parseInt(queryId, 10);
-    if (isNaN(id))
-      return badRequest();
-    const user = users.get(id);
-    if (!user)
-      return notFound();
-    return ok(JSON.stringify(user), { 'Content-Type': 'application/json' });
-  };
-  const userRoute = { method: 'GET', path: '/users', handler: userHandler };
-  const routes = [
-    userRoute,
-  ];
-  const listener = createListener(routes, () => notFound());
-  const server = createServer(listener);
-  server.listen(1234, () => console.log(server.address()));
+  const userRoutes = resource('/users', {
+    async read({ params: { userID }, auth }) {
+      if (!userID)
+        return badRequest('Please provide a valid UserID');
+      if (!users[userID])
+        return notFound(`User ID ${userID} not found`);
+  
+      return ok(users[userID]);
+    },
+    async edit({ params: { userID }, content }) {
+      if (!userID)
+        return badRequest('Please provide a valid UserID');
+      if (!users[userID])
+        return notFound(`User ID ${userID} not found`);
+      if (content.type !== 'json')
+        return badRequest('Please input JSON body');
+      users[userID] = content.value;
+
+      return ok(users[userID]);
+    },
+    async create({ content }) {
+      if (content.type !== 'json')
+        return badRequest('Please input JSON body');
+      userIdCounter++;
+      users[userIdCounter] = content.value;
+
+      return created(userIdCounter);
+    }
+  }, { allowedOrigins: ['david.com', 'https://www.google.com'], authorized: true });
+  const server = createServer(createListener([...userRoutes]));
+  server.listen(1234, () => console.log(`http://localhost:${server.address().port}`));
   process.on('SIGINT', () => server.close());
 };
 

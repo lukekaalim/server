@@ -2,7 +2,7 @@
   "name": "@lukekaalim/server",
   "version": "4.1.0",
   "description": "Simple utility library for defining a node server listener from a series of routes",
-  "main": "src/index.js",
+  "main": "src/main.js",
   "directories": {
     "example": "example"
   },
@@ -15,6 +15,20 @@
   "license": "MIT",
   "devDependencies": {
     "@lukekaalim/test": "^4.6.0",
-    "nyc": "^14.1.1"
-  }
+    "flow-bin": "^0.133.0"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukekaalim/server.git"
+  },
+  "keywords": [
+    "rest",
+    "http",
+    "server"
+  ],
+  "bugs": {
+    "url": "https://github.com/lukekaalim/server/issues"
+  },
+  "homepage": "https://github.com/lukekaalim/server#readme"
 }
