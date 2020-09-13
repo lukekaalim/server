@@ -16,5 +16,19 @@
   "devDependencies": {
     "@lukekaalim/test": "^4.6.0",
     "flow-bin": "^0.133.0"
-  }
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukekaalim/server.git"
+  },
+  "keywords": [
+    "rest",
+    "http",
+    "server"
+  ],
+  "bugs": {
+    "url": "https://github.com/lukekaalim/server/issues"
+  },
+  "homepage": "https://github.com/lukekaalim/server#readme"
 }
