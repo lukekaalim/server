@@ -1,23 +1,25 @@
 // @flow strict
-const url = require('url');
 /*::
 import type { HTTPMethod } from './http';
+import type { JSONValue } from './json';
 */
 
 /*::
 export type RouteRequest = {
-  query: Map<string, string>,
-  headers: Map<string, string>,
+  path: string,
+  method: HTTPMethod,
+  query: URLSearchParams,
+  headers: { [string]: string },
   body?: string,
 };
 
 export type RouteResponse = {
   status: number,
-  headers: { [header: string]: string },
+  headers: { [string]: string },
   body: string,
-}
+};
 
-export type RouteHandler = (request: RouteRequest) => Promise<RouteResponse> | RouteResponse
+export type RouteHandler = (request: RouteRequest) => Promise<RouteResponse>
 
 export type Route = {
   method: HTTPMethod,
@@ -25,17 +27,3 @@ export type Route = {
   handler: RouteHandler,
 };
 */
-
-const createRoute = (
-  path/*: string*/,
-  method/*: HTTPMethod*/,
-  handler/*: RouteHandler*/
-)/*: Route*/ => ({
-  path,
-  method,
-  handler,
-});
-
-module.exports = {
-  createRoute,
-};
