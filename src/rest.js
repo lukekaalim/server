@@ -5,6 +5,7 @@
 
 const { parse } = require("./json");
 const { badRequest, unauthorized, methodNotAllowed, noContent } = require('./responses');
+const { get, put, post, patch, delete: createDeleteRoute, options: createOptionsRoute, head } = require('./route');
 
 /*::
 type Authorization =
@@ -16,6 +17,7 @@ type Authorization =
 type Content =
   | { type: 'unknown' }
   | { type: 'none' }
+  | { type: 'text', value: string }
   | { type: 'json', value: JSONValue }
   | { type: 'bad', message: string }
 
@@ -77,6 +79,8 @@ const getContent = (contentType, body)/*: Content*/ => {
       } catch (error) {
         return { type: 'bad', message: error.message };
       }
+    case 'text/plain':
+      return { type: 'text', value: body };
     default:
       return { type: 'unknown' };
   }
@@ -127,71 +131,48 @@ const resource = (path/*: string*/, methods/*: ResourceMethods*/, options/*: Res
   const { create, read, edit, destroy } = methods;
   const { allowedHeaders = [], cacheSeconds = 0 } = options;
 
-  const getRoute = {
-    method: 'GET', path,
-    handler: createRouteHandler(read, options),
-  };
-  const postRoute = {
-    method: 'POST', path,
-    handler: createRouteHandler(create, options),
-  };
-  const putRoute = {
-    method: 'PUT', path,
-    handler: createRouteHandler(edit, options),
-  };
-  const patchRoute = {
-    method: 'PATCH', path,
-    handler: createRouteHandler(edit, options),
-  };
-  const deleteRoute = {
-    method: 'DELETE', path,
-    handler: createRouteHandler(destroy, options),
-  };
-
-  const headRoute = {
-    method: 'HEAD', path,
-    handler: async (req) => {
-      const response = await getRoute.handler(req);
-      if (response.status !== 200)
-        return response;
-    
-      return {
-        ...response,
-        body: '',
-        headers: {
-          ...response.headers,
-          'Content-Length': Buffer.from(response.body).length
-        },
-      };
-    }
-  };
-
-  const optionsRoute = {
-    method: 'OPTIONS', path,
-    handler: async (req) => {
-      const allowedMethodsHeader = [
-        read && 'GET',
-        read && 'HEAD',
-        create && 'POST',
-        edit && 'PUT',
-        edit && 'UPDATE',
-        read && 'HEAD',
-      ].filter(Boolean).join(', ');
-      const allowedHeadersHeader = [
-        'content-type',
-        ...allowedHeaders,
-      ].filter(Boolean).join(', ');
-    
-      const headers = {
-        ...createCORSRequestHeaders(req, options),
-        'Allow': allowedMethodsHeader,
-        'Access-Control-Allow-Methods': allowedMethodsHeader,
-        'Access-Control-Allow-Headers': allowedHeadersHeader,
-        'Access-Control-Max-Age': cacheSeconds.toString(),
-      };
-      return noContent('', headers);
-    }
-  }
+  const getRoute = get(path, createRouteHandler(read, options));
+  const postRoute = post(path, createRouteHandler(create, options));
+  const putRoute = put(path, createRouteHandler(edit, options));
+  const patchRoute = patch(path, createRouteHandler(edit, options));
+  const deleteRoute = createDeleteRoute(path, createRouteHandler(destroy, options));
+  const headRoute = head(path, async (req) => {
+    const response = await getRoute.handler(req);
+    if (response.status !== 200)
+      return response;
+  
+    return {
+      ...response,
+      body: '',
+      headers: {
+        ...response.headers,
+        'Content-Length': Buffer.from(response.body).length
+      },
+    };
+  });
+  const optionsRoute = createOptionsRoute(path, async (req) => {
+    const allowedMethodsHeader = [
+      read && 'GET',
+      read && 'HEAD',
+      create && 'POST',
+      edit && 'PUT',
+      edit && 'UPDATE',
+      read && 'HEAD',
+    ].filter(Boolean).join(', ');
+    const allowedHeadersHeader = [
+      'content-type',
+      ...allowedHeaders,
+    ].filter(Boolean).join(', ');
+  
+    const headers = {
+      ...createCORSRequestHeaders(req, options),
+      'Allow': allowedMethodsHeader,
+      'Access-Control-Allow-Methods': allowedMethodsHeader,
+      'Access-Control-Allow-Headers': allowedHeadersHeader,
+      'Access-Control-Max-Age': cacheSeconds.toString(),
+    };
+    return noContent('', headers);
+  });
 
   return [getRoute, postRoute, putRoute, patchRoute, deleteRoute, headRoute, optionsRoute].filter(Boolean);
 };

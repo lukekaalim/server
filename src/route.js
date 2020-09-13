@@ -27,3 +27,31 @@ export type Route = {
   handler: RouteHandler,
 };
 */
+
+const createRoute = (method/*: HTTPMethod*/, path/*: string*/, handler/*: RouteHandler*/)/*: Route*/ => ({
+  method,
+  path,
+  handler,
+});
+
+/*::
+type SimpleRouteConstructor = (path: string, handler: RouteHandler) => Route;
+*/
+
+const get     /*: SimpleRouteConstructor*/ = (path, handler) => createRoute('GET', path, handler);
+const post    /*: SimpleRouteConstructor*/ = (path, handler) => createRoute('POST', path, handler);
+const _delete /*: SimpleRouteConstructor*/ = (path, handler) => createRoute('DELETE', path, handler);
+const put     /*: SimpleRouteConstructor*/ = (path, handler) => createRoute('PUT', path, handler);
+const patch   /*: SimpleRouteConstructor*/ = (path, handler) => createRoute('PATCH', path, handler);
+const options /*: SimpleRouteConstructor*/ = (path, handler) => createRoute('OPTIONS', path, handler);
+const head    /*: SimpleRouteConstructor*/ = (path, handler) => createRoute('HEAD', path, handler);
+
+module.exports = {
+  get,
+  post,
+  delete: _delete,
+  put,
+  patch,
+  options,
+  head,
+};
