@@ -15,7 +15,6 @@
   "license": "MIT",
   "devDependencies": {
     "@lukekaalim/test": "^4.6.0",
-    "flow-bin": "^0.133.0",
-    "nyc": "^14.1.1"
+    "flow-bin": "^0.133.0"
   }
 }
