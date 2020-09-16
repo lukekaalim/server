@@ -11,13 +11,13 @@ const createRESTResponse = (
   headers/*: { [header: string]: string }*/ = {},
 ) => {
   const bodyString = stringify(body);
-  const bodyStringLength = Buffer.from(bodyString).length;
+  const bodyStringLength = Buffer.from(bodyString).length.toString();
   return {
     status,
     headers: {
+      ...headers,
       'Content-Length': bodyStringLength,
       'Content-Type': 'application/json',
-      ...headers,
     },
     body: bodyString,
   }
@@ -35,6 +35,7 @@ const              created/*: SimpleResponseConstructor*/ = (body, headers) => c
 const            noContent/*: SimpleResponseConstructor*/ = (body, headers) => createRESTResponse(204, body, headers);
 const           badRequest/*: SimpleResponseConstructor*/ = (body, headers) => createRESTResponse(400, body, headers);
 const         unauthorized/*: SimpleResponseConstructor*/ = (body, headers) => createRESTResponse(401, body, headers);
+const            forbidden/*: SimpleResponseConstructor*/ = (body, headers) => createRESTResponse(403, body, headers);
 const             notFound/*: SimpleResponseConstructor*/ = (body, headers) => createRESTResponse(404, body, headers);
 const     methodNotAllowed/*: SimpleResponseConstructor*/ = (body, headers) => createRESTResponse(406, body, headers);
 const  internalServerError/*: SimpleResponseConstructor*/ = (body, headers) => createRESTResponse(500, body, headers);
@@ -46,6 +47,7 @@ module.exports = {
   notFound,
   created,
   methodNotAllowed,
+  forbidden,
   badRequest,
   unauthorized,
   serviceUnavailable,

@@ -146,7 +146,7 @@ const resource = (path/*: string*/, methods/*: ResourceMethods*/, options/*: Res
       body: '',
       headers: {
         ...response.headers,
-        'Content-Length': Buffer.from(response.body).length
+        'Content-Length': Buffer.from(response.body).length.toString()
       },
     };
   });
