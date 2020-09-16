@@ -11,8 +11,8 @@ type JSONNull = null;
 
 type JSONPrimitive = JSONString | JSONNumber | JSONBoolean | JSONNull;
 
-type JSONArray = JSONValue[];
-type JSONObject = { [property: JSONString]: JSONValue };
+type JSONArray = $ReadOnlyArray<JSONValue>;
+type JSONObject = $ReadOnly<{ [property: JSONString]: JSONValue }>;
 
 type JSONComposite = JSONArray | JSONObject;
 
