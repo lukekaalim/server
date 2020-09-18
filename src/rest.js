@@ -31,6 +31,13 @@ type ResourceRequest = {
   params: SearchParameters,
   content: Content,
 };
+
+export type {
+  ResourceRequest,
+  SearchParameters,
+  Content,
+  Authorization,
+};
 */
 
 /*::
