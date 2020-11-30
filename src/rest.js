@@ -50,9 +50,14 @@ type ResourceMethods = {
 
 type ResourceOptions = {
   allowedHeaders?: string[],
-  allowedOrigins?: string[],
+  allowedOrigins?: { type: 'whitelist', origins: string } | { type: 'wildcard' },
   authorized?: bool,
   cacheSeconds?: number,
+};
+
+export type {
+  ResourceOptions,
+  ResourceMethods
 };
 */
 
@@ -123,14 +128,22 @@ const createRouteHandler = (methodHandler, options) => async (request) => {
   }
 };
 
+const isAllowedOrigin = (origin, allowedOrigins) => {
+  switch (allowedOrigins.type) {
+    case 'whitelist':
+      return allowedOrigins.origins.includes(origin);
+    case 'wildcard':
+      return true;
+  }
+};
+
 const createCORSRequestHeaders = (request, options) => {
-  const { headers } = request;
-  const { allowedOrigins = [], authorized = false } = options;
-  const origin = headers['origin'];
+  const origin = request.headers['origin'];
+  const { allowedOrigins = { type: 'whitelist', origins: [] }, authorized = false } = options;
 
   return Object.fromEntries([
-    (origin && allowedOrigins.includes(origin)) ? ['Access-Control-Allow-Origin', origin] : null,
-    (authorized) ? ['Access-Control-Allow-Credentials', 'true'] : null,
+    (origin && isAllowedOrigin(origin, allowedOrigins)) ? ['Access-Control-Allow-Origin', origin] : null,
+    authorized ? ['Access-Control-Allow-Credentials', 'true'] : null,
   ].filter(Boolean));
 };
 

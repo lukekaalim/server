@@ -43,7 +43,7 @@ const main = () => {
 
       return created(userIdCounter);
     }
-  }, { allowedOrigins: ['david.com', 'https://www.google.com'], authorized: true });
+  }, { allowedOrigins: { type: 'wildcard' }, authorized: true });
   const server = createServer(createListener([...userRoutes]));
   server.listen(1234, () => console.log(`http://localhost:${server.address().port}`));
   process.on('SIGINT', () => server.close());
