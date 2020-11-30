@@ -50,7 +50,9 @@ type ResourceMethods = {
 
 type ResourceOptions = {
   allowedHeaders?: string[],
-  allowedOrigins?: { type: 'whitelist', origins: string } | { type: 'wildcard' },
+  allowedOrigins?:
+    | { type: 'whitelist', origins: string[] }
+    | { type: 'wildcard' },
   authorized?: bool,
   cacheSeconds?: number,
 };
