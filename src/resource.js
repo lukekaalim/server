@@ -48,7 +48,20 @@ const getAuthorization = (head/*: RouteRequest*/)/*: Authorization*/ => {
   }
 }
 
+const requestAllowsContent = (head/*: RouteRequest*/) => {
+  switch (head.method.toUpperCase()) {
+    case 'HEAD':
+    case 'GET':
+    case 'OPTIONS':
+      return false;
+    default:
+      return true;
+  }
+};
+
 const getContent = async (head/*: RouteRequest*/)/*: Promise<Content>*/ => {
+  if (!requestAllowsContent(head))
+    return { type: 'none' };
   const contentType = head.headers['content-type'] || '';
   const contentLengthValue = head.headers['content-length'];
   const contentLength = contentLengthValue ? parseInt(contentLengthValue, 10) : null;
