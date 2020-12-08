@@ -1,6 +1,6 @@
 // @flow strict
 /*:: import type { HTTPMethod, HTTPIncomingRequest, HTTPRequestHeaders } from './http'; */
-const { toHttpMethod, toHttpRequestHeaders } = require('./http');
+const { toHttpMethod } = require('./http');
 
 /*::
 export type Query = { [searchParameter: string]: string };
@@ -29,7 +29,7 @@ const parseRequestURL = (urlFragment/*: string*/)/*: { path: string, query: Quer
 const createRouteRequest = (request/*: HTTPIncomingRequest*/)/*: RouteRequest*/ => {
   const { path, query } = parseRequestURL(request.url);
   const method = toHttpMethod(request.method);
-  const headers = toHttpRequestHeaders(request.headers);
+  const headers = request.headers;
 
   return {
     path,

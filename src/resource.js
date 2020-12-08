@@ -50,7 +50,8 @@ const getAuthorization = (head/*: RouteRequest*/)/*: Authorization*/ => {
 
 const getContent = async (head/*: RouteRequest*/)/*: Promise<Content>*/ => {
   const contentType = head.headers['content-type'] || '';
-  const contentLength = head.headers['content-length'];
+  const contentLengthValue = head.headers['content-length'];
+  const contentLength = contentLengthValue ? parseInt(contentLengthValue, 10) : null;
   
   const [type, subtype] = contentType.split('/', 2);
 

@@ -21,7 +21,6 @@ export type HTTPContentHeaders = {|
 
 export type HTTPRequestHeaders = {
   [string]: string,
-  ...HTTPContentHeaders
 };
 export type HTTPResponseHeaders = {
   [string]: string,
@@ -37,24 +36,6 @@ export type HTTPOutgoingResponse = Writable & $ReadOnly<{
   writeHead: (status: number, headers?: { [key: string]: string, ... }) => void,
 }>;
 */
-
-const toHttpContentHeaders = (headers/*: { [string]: string }*/)/*: HTTPContentHeaders*/ => {
-  const contentType = headers['content-type'] || null;
-  const contentLength = headers['content-length'] ? parseInt(headers['content-length'], 10) : null;
-
-  return {
-    // $FlowFixMe
-    'content-type': contentType,
-    'content-length': contentLength,
-  }
-};
-
-const toHttpRequestHeaders = (headers/*: { [string]: string }*/)/*: HTTPRequestHeaders*/ => {
-  return {
-    ...headers,
-    ...toHttpContentHeaders(headers),
-  }
-};
 
 const toHttpMethod = (methodName/*: string*/)/*: HTTPMethod*/ => {
   const upperCaseMethodName = methodName.toUpperCase();
@@ -74,7 +55,4 @@ const toHttpMethod = (methodName/*: string*/)/*: HTTPMethod*/ => {
 
 module.exports = {
   toHttpMethod,
-
-  toHttpContentHeaders,
-  toHttpRequestHeaders,
 };
