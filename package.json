@@ -1,6 +1,6 @@
 {
   "name": "@lukekaalim/server",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "Simple utility library for defining a node server listener from a series of routes",
   "main": "src/main.js",
   "directories": {
