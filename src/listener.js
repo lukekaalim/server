@@ -2,10 +2,13 @@
 /*::
 import type { HTTPIncomingRequest, HTTPOutgoingResponse } from './http';
 import type { Readable, Writable } from 'stream';
-import type { Route, RouteRequest, RouteResponse, RouteHandler } from './route';
+import type { Route, RouteHandler } from './route';
+import type { RouteRequest } from './request';
+import type { RouteResponse } from './response';
 */
-const { notFound, internalServerError, methodNotAllowed } = require('./responses');
+const { json: { notFound, internalServerError, methodNotAllowed } } = require('./response');
 const { toHttpMethod } = require('./http');
+const { createRouteRequest } = require('./request');
 
 /*::
 export type Listener = (
@@ -14,31 +17,17 @@ export type Listener = (
 ) => void;
 */
 
-const readStream = (stream, length) => new Promise((resolve, reject) => {
-  const chunks = [];
-  stream.setEncoding('utf8');
-  stream.on('data', data => chunks.push(data));
-  stream.on('error', error => reject(error));
-  stream.on('end', () => resolve(chunks.join('')));
-});
-
 const getResponse = async (request, routes) => {
   try {
-    const url = new URL(request.url, 'http://www.example.com');
-    const path = url.pathname;
-    const body = await readStream(request);
-    const method = toHttpMethod(request.method);
-    const headers = request.headers;
-    const query = url.searchParams;
-
-    if (!method)
-      return methodNotAllowed({ message: `Unknown method: "${request.method}"` });
+    const routeRequest = createRouteRequest(request);
+    const { method, path } = routeRequest;
+    
     const route = routes.find(route => route.method === method && route.path === path);
+    
     if (!route)
       return notFound({ message: 'The requested Route is not valid on this server' });
   
-    const response = await route.handler({ query, headers, body, path, method });
-    return response;
+    return await route.handler(routeRequest);
   } catch (error) {
     console.error(error);
     return internalServerError({ message: 'Unhandled Internal Server Error' })
@@ -52,8 +41,7 @@ const createListener = (
     try {
       const response = await getResponse(req, routes);
       res.writeHead(response.status, response.headers);
-      res.write(response.body);
-      res.end();
+      response.body.pipe(res);
     } catch (error) {
       res.end();
     }

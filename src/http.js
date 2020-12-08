@@ -1,6 +1,7 @@
 // @flow strict
 /*::
 import type { Readable, Writable } from 'stream';
+import type { ContentType } from './mime';
 */
 
 /*::
@@ -13,9 +14,17 @@ export type HTTPMethod =
  | 'OPTIONS'
  | 'PATCH';
 
-export type HTTPServerHeaders = {
-  'Content-Type'?: 'application/json' | 'text/plain',
-  'Content-Length'?: number,
+export type HTTPContentHeaders = {|
+  'content-type': null | ContentType,
+  'content-length': null | number,
+|};
+
+export type HTTPRequestHeaders = {
+  [string]: string,
+  ...HTTPContentHeaders
+};
+export type HTTPResponseHeaders = {
+  [string]: string,
 };
 
 export type HTTPIncomingRequest = Readable & {
@@ -25,12 +34,31 @@ export type HTTPIncomingRequest = Readable & {
 };
 
 export type HTTPOutgoingResponse = Writable & $ReadOnly<{
-  writeHead: (status: number, headers?: { [key: string] : string, ... }) => void,
+  writeHead: (status: number, headers?: { [key: string]: string, ... }) => void,
 }>;
 */
 
-const toHttpMethod = (methodName/*: string*/)/*: ?HTTPMethod*/ => {
-  switch (methodName) {
+const toHttpContentHeaders = (headers/*: { [string]: string }*/)/*: HTTPContentHeaders*/ => {
+  const contentType = headers['content-type'] || null;
+  const contentLength = headers['content-length'] ? parseInt(headers['content-length'], 10) : null;
+
+  return {
+    // $FlowFixMe
+    'content-type': contentType,
+    'content-length': contentLength,
+  }
+};
+
+const toHttpRequestHeaders = (headers/*: { [string]: string }*/)/*: HTTPRequestHeaders*/ => {
+  return {
+    ...headers,
+    ...toHttpContentHeaders(headers),
+  }
+};
+
+const toHttpMethod = (methodName/*: string*/)/*: HTTPMethod*/ => {
+  const upperCaseMethodName = methodName.toUpperCase();
+  switch (upperCaseMethodName) {
     case 'GET':
     case 'POST':
     case 'DELETE':
@@ -38,12 +66,15 @@ const toHttpMethod = (methodName/*: string*/)/*: ?HTTPMethod*/ => {
     case 'HEAD':
     case 'OPTIONS':
     case 'PATCH':
-      return methodName;
+      return upperCaseMethodName;
     default:
-      return null;
+      throw new TypeError(`"${methodName}" is not an acceptable HTTP method`)
   }
 };
 
 module.exports = {
   toHttpMethod,
+
+  toHttpContentHeaders,
+  toHttpRequestHeaders,
 };

@@ -1,6 +1,6 @@
 // @flow strict
 const {
-  ok, badRequest, notFound, noContent, created,
+  json: { ok, badRequest, notFound, noContent, created },
   createListener,
   resource,
 } = require('..');
@@ -16,7 +16,7 @@ const users = {
 
 const main = () => {
   const userRoutes = resource('/users', {
-    async read({ params: { userID }, auth }) {
+    async get({ query: { userID }, auth }) {
       if (!userID)
         return badRequest('Please provide a valid UserID');
       if (!users[userID])
@@ -24,7 +24,7 @@ const main = () => {
   
       return ok(users[userID]);
     },
-    async edit({ params: { userID }, content }) {
+    async put({ query: { userID }, content }) {
       if (!userID)
         return badRequest('Please provide a valid UserID');
       if (!users[userID])
@@ -35,7 +35,7 @@ const main = () => {
 
       return ok(users[userID]);
     },
-    async create({ content }) {
+    async post({ content }) {
       if (content.type !== 'json')
         return badRequest('Please input JSON body');
       userIdCounter++;
