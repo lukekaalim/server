@@ -14,6 +14,20 @@ const users = {
   '4': { name: 'nicky', age: 18 },
 };
 
+const toUser = (value/*: mixed*/) => {
+  if (typeof value !== 'object' || value === null)
+    throw new TypeError();
+  const { name, age } = value;
+  if (typeof name !== 'string')
+    throw new TypeError();
+  if (typeof age !== 'number')
+    throw new TypeError();
+  return {
+    name,
+    age
+  };
+}
+
 const main = () => {
   const userRoutes = resource('/users', {
     async get({ query: { userID }, auth }) {
@@ -24,24 +38,20 @@ const main = () => {
   
       return ok(users[userID]);
     },
-    async put({ query: { userID }, parseJSON }) {
+    async put({ query: { userID }, validateJSON }) {
       if (!userID)
         return badRequest('Please provide a valid UserID');
       if (!users[userID])
         return notFound(`User ID ${userID} not found`);
-      const content = await parseJSON();
-      if (!content)
-        return badRequest('Please input JSON body');
-      users[userID] = content.value;
+      const user = await validateJSON(toUser);
+      users[userID] = user;
 
       return ok(users[userID]);
     },
-    async post({ parseJSON }) {
-      const content = await parseJSON();
-      if (!content)
-        return badRequest('Please input JSON body');
+    async post({ validateJSON }) {
+      const user = await validateJSON(toUser);
       userIdCounter++;
-      users[userIdCounter] = content.value;
+      users[userIdCounter] = user;
 
       return created(userIdCounter);
     }

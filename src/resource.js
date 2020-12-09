@@ -17,8 +17,9 @@ export type ResourceRequest = {
   ...RouteRequest,
   auth: Authorization,
   content: ?StreamContent,
-  parseContent: (acceptOnly?: string[]) => Promise<?Content>,
-  parseJSON: () => Promise<?JSONContent>,
+  parseContent: (acceptOnly?: string[]) => Promise<Content>,
+  parseJSON: () => Promise<JSONContent>,
+  validateJSON: <T>(validator: JSONValue => T) => Promise<T>,
 };
 */
 
@@ -66,11 +67,22 @@ const getResourceRequest = (request/*: RouteRequest*/)/*: ResourceRequest*/ => {
   const auth = getAuthorization(request);
   const content = getContent(request);
 
-  const parseContent = async (acceptOnly) => await parseStreamContent(content, acceptOnly);
-  const parseJSON = async () => {
-    const parsedContent = await parseStreamContent(content);
-    return parsedContent?.type === 'json' ? parsedContent : null;
+  const parseContent = async (acceptOnly) => {
+    const parsedContent = await parseStreamContent(content, acceptOnly);
+    if (!parsedContent)
+      throw new TypeError(`Expected request body, but found nothing`);
+    return parsedContent;
   };
+  const parseJSON = async ()/*: Promise<JSONContent>*/ => {
+    const parsedContent = await parseContent();
+    if (parsedContent.type !== 'json')
+      throw new TypeError(`Expected JSON in request, but found ${content?.contentType || 'unknown content type'}`);
+    return parsedContent;
+  };
+  const validateJSON = async /*::<T>*/(validator/*: JSONValue => T*/)/*: Promise<T>*/ => {
+    const parsedContent = await parseJSON();
+    return validator(parsedContent.value);
+  }
 
   return {
     ...request,
@@ -78,6 +90,7 @@ const getResourceRequest = (request/*: RouteRequest*/)/*: ResourceRequest*/ => {
     content,
     parseContent,
     parseJSON,
+    validateJSON,
   };
 };
 
