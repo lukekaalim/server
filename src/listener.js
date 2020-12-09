@@ -6,7 +6,7 @@ import type { Route, RouteHandler } from './route';
 import type { RouteRequest } from './request';
 import type { RouteResponse } from './response';
 */
-const { json: { notFound, internalServerError, methodNotAllowed } } = require('./response');
+const { json: { notFound, internalServerError } } = require('./response');
 const { toHttpMethod } = require('./http');
 const { createRouteRequest } = require('./request');
 
@@ -30,7 +30,7 @@ const getResponse = async (request, routes) => {
     return await route.handler(routeRequest);
   } catch (error) {
     console.error(error);
-    return internalServerError({ message: 'Unhandled Internal Server Error' })
+    return internalServerError({ message: 'Unhandled Internal Server Error' });
   }
 }
 

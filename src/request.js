@@ -3,7 +3,7 @@
 const { toHttpMethod } = require('./http');
 
 /*::
-export type Query = { [searchParameter: string]: string };
+export type Query = { +[searchParameter: string]: string };
 
 export type RouteRequest = {
   path: string,

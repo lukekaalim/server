@@ -34,7 +34,7 @@ const createRoute = (method/*: HTTPMethod*/, path/*: string*/, handler/*: RouteH
 
 /*::
 type RouteMethods = {
-  [$Keys<typeof methodNames>]: (path: string, handler: RouteHandler) => Route, 
+  +[$Keys<typeof methodNames>]: (path: string, handler: RouteHandler) => Route, 
 };
 */
 

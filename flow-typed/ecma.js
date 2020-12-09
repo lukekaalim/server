@@ -2,7 +2,7 @@
 
 /*::
 declare class Object {
-  static entries<K, V>({ [K]: V }): Array<[K, V]>;
+  static entries<K, V>({ +[K]: V }): Array<[K, V]>;
   static fromEntries<K, V>(Iterable<[K, V]>): { [K]: V };
 }
 */

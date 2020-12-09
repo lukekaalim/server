@@ -2,7 +2,6 @@
 
 /*::
 export type * from './http';
-export type * from './mime';
 
 export type * from './response';
 export type * from './request';
@@ -19,7 +18,6 @@ export type * from './stream';
 
 module.exports = {
   ...require('./http'),
-  ...require('./mime'),
 
   ...require('./response'),
   ...require('./request'),

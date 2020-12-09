@@ -1,7 +1,6 @@
 // @flow strict
 /*::
 import type { Readable, Writable } from 'stream';
-import type { ContentType } from './mime';
 */
 
 /*::
@@ -14,26 +13,21 @@ export type HTTPMethod =
  | 'OPTIONS'
  | 'PATCH';
 
-export type HTTPContentHeaders = {|
-  'content-type': null | ContentType,
-  'content-length': null | number,
-|};
-
 export type HTTPRequestHeaders = {
-  [string]: string,
+  [string]: ?string,
 };
 export type HTTPResponseHeaders = {
   [string]: string,
 };
 
 export type HTTPIncomingRequest = Readable & {
-  headers: { [header: string]: string },
+  headers: HTTPRequestHeaders,
   url: string,
   method: string
 };
 
 export type HTTPOutgoingResponse = Writable & $ReadOnly<{
-  writeHead: (status: number, headers?: { [key: string]: string, ... }) => void,
+  writeHead: (status: number, headers?: HTTPResponseHeaders) => void,
 }>;
 */
 

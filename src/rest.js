@@ -5,10 +5,8 @@
 /*:: import type { ResourceRequest } from './resource'; */
 /*:: import type { RouteResponse } from './response'; */
 
-const { Readable } = require('stream');
-const { parse } = require("./json");
 const { getResourceRequest } = require('./resource');
-const { json: { badRequest, unauthorized, methodNotAllowed, noContent }, responseUtil } = require('./response');
+const { json: { noContent }, responseUtil } = require('./response');
 const { methods: { get, put, post, patch, delete: deleteRoute, options: createOptionsRoute, head }, methods } = require('./route');
 
 /*::

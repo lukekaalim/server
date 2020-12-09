@@ -2,6 +2,8 @@
 /*:: import type { Readable } from 'stream'; */
 /*:: import type { RouteRequest } from './request'; */
 /*:: import type { JSONValue } from './json'; */
+/*:: import type { Content, StreamContent, NoContent, JSONContent } from './content'; */
+const { parseStreamContent } = require('./content');
 const { readStream } = require('./stream');
 const { parse } = require("./json");
 
@@ -11,22 +13,12 @@ export type Authorization =
   | { type: 'none' }
   | { type: 'basic', username: string, password: string }
   | { type: 'bearer', token: string }
-
-export type Content =
-  | { type: 'unknown', contentLength: ?number, stream: Readable }
-  | { type: 'none' }
-  | { type: 'text', value: string }
-  | { type: 'json', value: JSONValue }
-  | { type: 'bad', message: string }
-  | { type: 'bytes', contentLength: ?number, stream: Readable }
-  | { type: 'audio', format: string, contentLength: ?number, audioStream: Readable }
-  | { type: 'image', format: string, contentLength: ?number, imageStream: Readable }
-  | { type: 'video', format: string, contentLength: ?number, videoStream: Readable }
-
 export type ResourceRequest = {
   ...RouteRequest,
   auth: Authorization,
-  content: Content
+  content: ?StreamContent,
+  parseContent: (acceptOnly?: string[]) => Promise<?Content>,
+  parseJSON: () => Promise<?JSONContent>,
 };
 */
 
@@ -59,54 +51,33 @@ const requestAllowsContent = (head/*: RouteRequest*/) => {
   }
 };
 
-const getContent = async (head/*: RouteRequest*/)/*: Promise<Content>*/ => {
-  if (!requestAllowsContent(head))
-    return { type: 'none' };
-  const contentType = head.headers['content-type'] || '';
-  const contentLengthValue = head.headers['content-length'];
-  const contentLength = contentLengthValue ? parseInt(contentLengthValue, 10) : null;
+const getContent = (request/*: RouteRequest*/)/*: ?StreamContent*/ => {
+  if (!requestAllowsContent(request))
+    return null;
   
-  const [type, subtype] = contentType.split('/', 2);
+  const contentType = request.headers['content-type'] || '';
+  const contentLengthValue = request.headers['content-length'];
+  const contentLength = contentLengthValue ? parseInt(contentLengthValue, 10) : null;
 
-  switch (type) {
-    case '':
-    case undefined:
-      return { type: 'none' };
-    case 'application': {
-      switch (subtype) {
-        case 'octet-stream':
-          return { type: 'bytes', contentLength, stream: head.stream };
-        case 'json':
-          try {
-            return { type: 'json', value: parse(await readStream(head.stream, contentLength)) };
-          } catch (error) {
-            return { type: 'bad', message: error.message };
-          }
-        default:
-          return { type: 'unknown', contentLength, stream: head.stream };
-      }
-    }
-    case 'text':
-      return { type: 'text', value: await readStream(head.stream, contentLength) };
-    case 'image':
-      return { type: 'image', format: subtype, contentLength, imageStream: head.stream };
-    case 'video':
-      return { type: 'video', format: subtype, contentLength, videoStream: head.stream };
-    case 'audio':
-      return { type: 'audio', format: subtype, contentLength, audioStream: head.stream };
-    default:
-      return { type: 'unknown', contentLength, stream: head.stream };
-  }
-}
+  return { type: 'stream', stream: request.stream, contentType, contentLength };
+};
 
-const getResourceRequest = async (head/*: RouteRequest*/)/*: Promise<ResourceRequest>*/ => {
-  const auth = getAuthorization(head);
-  const content = await getContent(head);
+const getResourceRequest = (request/*: RouteRequest*/)/*: ResourceRequest*/ => {
+  const auth = getAuthorization(request);
+  const content = getContent(request);
+
+  const parseContent = async (acceptOnly) => await parseStreamContent(content, acceptOnly);
+  const parseJSON = async () => {
+    const parsedContent = await parseStreamContent(content);
+    return parsedContent?.type === 'json' ? parsedContent : null;
+  };
 
   return {
-    ...head,
+    ...request,
     auth,
     content,
+    parseContent,
+    parseJSON,
   };
 };
 

@@ -24,19 +24,21 @@ const main = () => {
   
       return ok(users[userID]);
     },
-    async put({ query: { userID }, content }) {
+    async put({ query: { userID }, parseJSON }) {
       if (!userID)
         return badRequest('Please provide a valid UserID');
       if (!users[userID])
         return notFound(`User ID ${userID} not found`);
-      if (content.type !== 'json')
+      const content = await parseJSON();
+      if (!content)
         return badRequest('Please input JSON body');
       users[userID] = content.value;
 
       return ok(users[userID]);
     },
-    async post({ content }) {
-      if (content.type !== 'json')
+    async post({ parseJSON }) {
+      const content = await parseJSON();
+      if (!content)
         return badRequest('Please input JSON body');
       userIdCounter++;
       users[userIdCounter] = content.value;
@@ -46,6 +48,7 @@ const main = () => {
   }, { allowedOrigins: { type: 'wildcard' }, authorized: true });
   const server = createServer(createListener([...userRoutes]));
   server.listen(1234, () => console.log(`http://localhost:${server.address().port}`));
+  server.on('error', () => server.close());
   process.on('SIGINT', () => server.close());
 };
 
