@@ -76,14 +76,14 @@ const getResourceRequest = (request/*: RouteRequest*/)/*: ResourceRequest*/ => {
   const parseJSON = async ()/*: Promise<JSONContent>*/ => {
     const parsedContent = await parseContent();
     if (parsedContent.type !== 'json')
-      throw new TypeError(`Expected JSON in request, but found ${content?.contentType || 'unknown content type'}`);
+      throw new TypeError(`Expected JSON in request, but found ${content && content.contentType || 'unknown content type'}`);
     return parsedContent;
   };
   const validateJSON = async /*::<T>*/(validator/*: JSONValue => T*/)/*: Promise<T>*/ => {
     const parsedContent = await parseJSON();
     return validator(parsedContent.value);
   }
-
+  
   return {
     ...request,
     auth,
