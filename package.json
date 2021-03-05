@@ -8,9 +8,9 @@
     "tests": "tests"
   },
   "scripts": {
-    "install": "cd tests; npm i; echo \"Installed test project\"",
+    "install": "cd tests; npm i --no-save; echo \"Installed test project\"",
     "preversion": "cd tests; npm test",
-    "postversion": "npm i; git push --follow-tags"
+    "postversion": "git push --follow-tags"
   },
   "author": "luke kaalim (luke@kaal.im)",
   "license": "MIT",
