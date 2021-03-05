@@ -10,7 +10,7 @@
   "scripts": {
     "install": "cd tests; npm i; echo \"Installed test project\"",
     "preversion": "cd tests; npm test",
-    "postversion": "git push --follow-tags"
+    "postversion": "npm i; git push --follow-tags"
   },
   "author": "luke kaalim (luke@kaal.im)",
   "license": "MIT",
