@@ -1,49 +1,49 @@
 // @flow strict
 /*::
 import type { HTTPIncomingRequest, HTTPOutgoingResponse } from './http';
-import type { Readable, Writable } from 'stream';
-import type { Route, RouteHandler } from './route';
-import type { RouteRequest } from './request';
-import type { RouteResponse } from './response';
+import type { Route, RouteHandler, RouteResponse } from './route';
 */
-const { json: { notFound, internalServerError } } = require('./response');
-const { toHttpMethod } = require('./http');
-const { createRouteRequest } = require('./request');
+const { Readable, Stream } = require('stream');
+const { writeStream } = require('./stream');
+const { statusCodes: { internalServerError, notFound }} = require('./http');
+const { getRouteRequest, writeOutgoingResponse, respond } = require('./route')
 
 /*::
-export type Listener = (
+export type HTTPListener = (
   request: HTTPIncomingRequest,
   response: HTTPOutgoingResponse, 
 ) => void;
 */
 
-const getResponse = async (request, routes) => {
-  try {
-    const routeRequest = createRouteRequest(request);
-    const { method, path } = routeRequest;
-    
-    const route = routes.find(route => route.method === method && route.path === path);
-    
-    if (!route)
-      return notFound({ message: 'The requested Route is not valid on this server' });
+const createFixedListener = (routeResponse/*: RouteResponse*/)/*: HTTPListener*/ => {
+  const listener = (req/*: HTTPIncomingRequest*/, res/*: HTTPOutgoingResponse*/) => {
+    res.writeHead(routeResponse.status, routeResponse.headers);
+    writeStream(res, routeResponse.body || null);
+  };
+  return listener;
+};
   
-    return await route.handler(routeRequest);
-  } catch (error) {
-    console.error(error);
-    return internalServerError({ message: 'Unhandled Internal Server Error' });
-  }
-}
-
-const createListener = (
-  routes/*: Array<Route>*/
-)/*: Listener*/ => {
-  const listener = async (req, res) => {
+const createRouteListener = (
+  routes/*: Route[]*/,
+  fallbackListener/*: HTTPListener*/ = createFixedListener(respond(notFound)),
+)/*: HTTPListener*/ => {
+  const routeMap = new Map(routes.map(route => [route.method + route.path, route]));
+  const listener = async (httpRequest, httpResponse) => {
     try {
-      const response = await getResponse(req, routes);
-      res.writeHead(response.status, response.headers);
-      response.body.pipe(res);
+      const routeRequest = getRouteRequest(httpRequest);
+      const { method, path } = routeRequest;
+      const route = routeMap.get(method + path);
+      if (!route)
+        return fallbackListener(httpRequest, httpResponse);
+
+      try {
+        const response = await route.handler(routeRequest)
+        writeOutgoingResponse(httpResponse, response);
+      } catch (error) {
+        writeOutgoingResponse(httpResponse, respond(internalServerError))
+      }
     } catch (error) {
-      res.end();
+      httpResponse.end();
     }
   };
 
@@ -51,5 +51,7 @@ const createListener = (
 };
 
 module.exports = {
-  createListener,
+  createRouteListener,
+  router: createRouteListener,
+  createFixedListener,
 }

@@ -4,20 +4,19 @@
   "description": "Simple utility library for defining a node server listener from a series of routes",
   "main": "src/main.js",
   "directories": {
-    "example": "example"
+    "example": "example",
+    "tests": "tests"
   },
   "scripts": {
-    "test": "node test",
-    "preversion": "npm test",
+    "install": "cd tests; npm i; echo \"Installed test project\"",
+    "preversion": "cd tests; npm test",
     "postversion": "git push --follow-tags"
   },
   "author": "luke kaalim (luke@kaal.im)",
   "license": "MIT",
   "devDependencies": {
-    "@lukekaalim/test": "^4.6.0",
-    "flow-bin": "^0.139.0"
+    "flow-bin": "^0.144.0"
   },
-  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lukekaalim/server.git"

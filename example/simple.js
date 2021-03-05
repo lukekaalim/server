@@ -1,16 +1,4 @@
-# @lukekaalim/server
-
-Library for building simple servers.
-
-## Installation
-```bash
-npm i @lukekaalim/server
-```
-
-## Usage
-
-This server will return "Hello World" on port 8080 when requesting "/greetings", and 404 on all other responses.
-```js
+// @flow strict
 const { text, route, router } = require('@lukekaalim/server');
 const { createServer } = require('http');
 
@@ -27,4 +15,3 @@ const main = () => {
 };
 
 main();
-```

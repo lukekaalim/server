@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "node entry"
+  },
+  "dependencies": {
+    "@lukekaalim/server": "file:..",
+    "@lukekaalim/test": "^8.1.0"
+  }
+}

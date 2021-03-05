@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "dependencies": {
+    "@lukekaalim/server": "file:.."
+  }
+}

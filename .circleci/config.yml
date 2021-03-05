@@ -3,7 +3,7 @@
 version: 2
 jobs:
   test:
-    working_directory: ~/repo
+    working_directory: ~/repo/tests
     docker:
       - image: circleci/node:12
     steps:
@@ -14,14 +14,14 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - modules-
 
-      - run: npm i
+      - run: npm ci install
 
       - save_cache:
           paths:
             - node_modules
           key: modules-{{ checksum "package.json" }}
 
-      - run: node test
+      - run: npm test
   deploy:
     working_directory: ~/repo
     docker:

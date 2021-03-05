@@ -1,101 +1,56 @@
 // @flow strict
-/*:: import type { Readable } from 'stream'; */
-/*:: import type { RouteRequest } from './request'; */
-/*:: import type { JSONValue } from './json'; */
-/*:: import type { Content, StreamContent, NoContent, JSONContent } from './content'; */
-const { parseStreamContent } = require('./content');
-const { readStream } = require('./stream');
-const { parse } = require("./json");
+/*:: import type { HTTPMethod } from './http'; */
+/*:: import type { Route, RouteHandler } from './route'; */
 
+/*:: import type { CacheOptions } from './cache'; */
+/*:: import type { Content } from './content'; */
+/*:: import type { Authorization } from './authorization'; */
+/*:: import type { AccessOptions } from './access'; */
+const { createRoute } = require('./route');
+
+const { getAuthorization } = require('./authorization');
+const { getContent } = require('./content');
+
+const { createCacheHeaders } = require('./cache');
+const { createAccessHeaders } = require('./access');
+const { statusCodes, toMethod } = require('./http');
+
+/*
+A HTTP _resource_ is a collection of routes than handle various methods for a single path.
+It abstracts over certain headers, like content-type and content-length and authorization.
+*/
 /*::
-export type Authorization =
-  | { type: 'unknown', value: string }
-  | { type: 'none' }
-  | { type: 'basic', username: string, password: string }
-  | { type: 'bearer', token: string }
-export type ResourceRequest = {
-  ...RouteRequest,
-  auth: Authorization,
-  content: ?StreamContent,
-  parseContent: (acceptOnly?: string[]) => Promise<Content>,
-  parseJSON: () => Promise<JSONContent>,
-  validateJSON: <T>(validator: JSONValue => T) => Promise<T>,
+export type HTTPResource = {
+  methods: { [method: HTTPMethod]: RouteHandler },
+  path: string,
+  access?: AccessOptions,
+  cache?: CacheOptions,
 };
 */
 
-const getAuthorization = (head/*: RouteRequest*/)/*: Authorization*/ => {
-  const authorizationValue = head.headers['authorization'];
-
-  if (!authorizationValue)
-    return { type: 'none' };
-  const [type, credentials] = authorizationValue.split(' ', 2);
-  switch (type.toLowerCase()) {
-    case 'basic': {
-      const [username, password] = Buffer.from(credentials, 'base64').toString('utf8').split(':', 2);
-      return { type: 'basic', username, password }
-    }
-    case 'bearer':
-      return { type: 'bearer', token: credentials }
-    default:
-      return { type: 'unknown', value: authorizationValue };
-  }
-}
-
-const requestAllowsContent = (head/*: RouteRequest*/) => {
-  switch (head.method.toUpperCase()) {
-    case 'HEAD':
-    case 'GET':
-    case 'OPTIONS':
-      return false;
-    default:
-      return true;
-  }
-};
-
-const getContent = (request/*: RouteRequest*/)/*: ?StreamContent*/ => {
-  if (!requestAllowsContent(request))
-    return null;
-  
-  const contentType = request.headers['content-type'] || '';
-  const contentLengthValue = request.headers['content-length'];
-  const contentLength = contentLengthValue ? parseInt(contentLengthValue, 10) : null;
-
-  return { type: 'stream', stream: request.stream, contentType, contentLength };
-};
-
-const getResourceRequest = (request/*: RouteRequest*/)/*: ResourceRequest*/ => {
-  const auth = getAuthorization(request);
-  const content = getContent(request);
-
-  const parseContent = async (acceptOnly) => {
-    const parsedContent = await parseStreamContent(content, acceptOnly);
-    if (!parsedContent)
-      throw new TypeError(`Expected request body, but found nothing`);
-    return parsedContent;
+const createHTTPResourceRoutes = (resource/*: HTTPResource*/)/*: Route[]*/ => {
+  const defaultMethods/*: { [method: HTTPMethod]: RouteHandler }*/ = {
+    OPTIONS: (request) => ({ status: statusCodes.ok, body: null, headers: {} }),
   };
-  const parseJSON = async ()/*: Promise<JSONContent>*/ => {
-    const parsedContent = await parseContent();
-    if (parsedContent.type !== 'json')
-      throw new TypeError(`Expected JSON in request, but found ${content && content.contentType || 'unknown content type'}`);
-    return parsedContent;
+  const createRouteHandler = (method) => async (request) => {
+    const response = await allMethods[method](request);
+    return {
+      ...response,
+      headers: {
+        ...createCacheHeaders(resource.cache),
+        ...createAccessHeaders(request.headers, resource.access),
+        ...response.headers,
+      }
+    };
   };
-  const validateJSON = async /*::<T>*/(validator/*: JSONValue => T*/)/*: Promise<T>*/ => {
-    const parsedContent = await parseJSON();
-    return validator(parsedContent.value);
-  }
-  
-  return {
-    ...request,
-    auth,
-    content,
-    parseContent,
-    parseJSON,
-    validateJSON,
-  };
+  const allMethods = { ...defaultMethods, ...resource.methods };
+  return Object
+    .keys(allMethods)
+    .map(toMethod)
+    .map((method) => createRoute(method, resource.path, createRouteHandler(method)))
 };
 
 module.exports = {
-  getContent,
-  getAuthorization,
-  getResourceRequest,
+  resource: createHTTPResourceRoutes,
+  createHTTPResourceRoutes,
 };

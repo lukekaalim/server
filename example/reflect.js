@@ -1,21 +1,20 @@
 // @flow strict
-const {
-  stream: { ok }, json: { badRequest },
-  createListener,
-  resource,
-} = require('..');
 const { createServer } = require('http');
+const {
+  createRouteListener,
+  createHTTPResourceRoutes,
+  
+  createRouteResponse,
+  statusCodes: { ok },
+  readBody
+} = require('@lukekaalim/server');
 
 const createReflectionServer = () => {
-  const server = createServer(createListener(resource('/', {
-    post: async ({ content }) => {
-      if (!content)
-        return badRequest({ message: 'no content' });
-      return ok(content?.stream, {
-        'content-type': content.contentType,
-        'content-length': content.contentLength?.toString()
-      })
-    }
+  const server = createServer(createRouteListener(createHTTPResourceRoutes({
+    path: '/',
+    methods: {
+      POST: (req) => createRouteResponse(ok, {}, req.incoming),
+    },
   })));
   server.listen(5678, () => console.log(`http://localhost:${server.address().port}`));
   server.on('error', () => server.close());

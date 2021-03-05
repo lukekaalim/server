@@ -3,34 +3,32 @@
 /*::
 export type * from './http';
 
-export type * from './response';
-export type * from './request';
-
 export type * from './resource';
 export type * from './route';
 export type * from './content';
+export type * from './responses';
 
 export type * from './listener';
-export type * from './rest';
 
 export type * from './json';
 export type * from './stream';
+
 */
 
 module.exports = {
   ...require('./http'),
 
-  ...require('./response'),
-  ...require('./request'),
-
+  ...require('./listener'),
   ...require('./route'),
   ...require('./resource'),
-  ...require('./content'),
 
-  ...require('./listener'),
-  ...require('./rest'),
+  ...require('./access'),
+  ...require('./authorization'),
+  ...require('./content'),
+  ...require('./responses'),
 
   ...require('./json'),
   ...require('./stream'),
-  ...require('./http'),
+
+  ...require('./utility'),
 };

@@ -1,13 +1,31 @@
 // @flow strict
 /*::
-import type { HTTPMethod, HTTPIncomingRequest } from './http';
+import type { Readable } from 'stream';
+import type { HTTPMethod, HTTPIncomingRequest, HTTPOutgoingResponse, HTTPHeaders, HTTPStatus } from './http';
 import type { JSONValue } from './json';
-import type { RouteRequest } from './request';
-import type { RouteResponse } from './response';
 */
+const { toMethod, statusCodes } = require('./http');
+const { writeStream } = require('./stream');
 
 /*::
-export type RouteHandler = (request: RouteRequest) => Promise<RouteResponse>
+
+export type RouteRequest = {
+  path: string,
+  method: HTTPMethod,
+  query: URLSearchParams,
+  headers: HTTPHeaders,
+
+  incoming: HTTPIncomingRequest
+}
+
+export type RouteResponse = {
+  status: HTTPStatus,
+  headers: HTTPHeaders,
+  body: null | Readable | Buffer | string,
+};
+
+
+export type RouteHandler = (request: RouteRequest) => Promise<RouteResponse> | RouteResponse;
 
 export type Route = {
   method: HTTPMethod,
@@ -16,35 +34,54 @@ export type Route = {
 };
 */
 
-const methodNames/*: { [string]: HTTPMethod }*/ = {
-  get: 'GET',
-  post: 'POST',
-  delete: 'DELETE',
-  put: 'PUT',
-  patch: 'PATCH',
-  options: 'OPTIONS',
-  head: 'HEAD',
+const getRouteRequest = (incoming/*: HTTPIncomingRequest*/)/*: RouteRequest*/ => {
+  const [path, search] = incoming.url.split('?')
+  const query = new URLSearchParams('?' + search);
+  const method = toMethod(incoming.method);
+  const headers = incoming.headers;
+
+  return {
+    path,
+    query,
+    method,
+    headers,
+
+    incoming,
+  };
 };
 
-const createRoute = (method/*: HTTPMethod*/, path/*: string*/, handler/*: RouteHandler*/)/*: Route*/ => ({
+const createRoute = (
+  method/*: HTTPMethod*/,
+  path/*: string*/,
+  handler/*: RouteHandler*/
+)/*: Route*/ => ({
   method,
   path,
   handler,
 });
 
-/*::
-type RouteMethods = {
-  +[$Keys<typeof methodNames>]: (path: string, handler: RouteHandler) => Route, 
-};
-*/
+const createRouteResponse = (
+  status/*: HTTPStatus*/ = statusCodes.noContent,
+  headers/*: HTTPHeaders*/ = {},
+  body/*: null | Readable | Buffer | string*/ = null
+)/*: RouteResponse*/ => ({
+  status,
+  headers,
+  body,
+});
 
-const methods/*: RouteMethods*/ = Object.fromEntries(
-  Object.entries(methodNames)
-    .map(([name, method]) => [
-      name,
-      (path, handler) => createRoute(method, path, handler)
-    ]));
+const writeOutgoingResponse = (outgoing/*: HTTPOutgoingResponse*/, response/*: RouteResponse*/) => {
+  outgoing.writeHead(response.status, response.headers);
+  writeStream(outgoing, response.body || null);
+};
 
 module.exports = {
-  methods,
+  createRoute,
+  route: createRoute,
+
+  createRouteResponse,
+  respond: createRouteResponse,
+
+  getRouteRequest,
+  writeOutgoingResponse,
 };
