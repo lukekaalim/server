@@ -8,6 +8,10 @@ export type * from './route';
 export type * from './content';
 export type * from './responses';
 
+export type * from './access';
+export type * from './authorization';
+export type * from './cache';
+
 export type * from './listener';
 
 export type * from './json';
