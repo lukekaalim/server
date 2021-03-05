@@ -8,7 +8,7 @@
     "tests": "tests"
   },
   "scripts": {
-    "install": "cd tests; npm i --no-save; echo \"Installed test project\"",
+    "prepare": "cd tests; npm i --no-save; echo \"Installed test project\"",
     "preversion": "cd tests; npm test",
     "postversion": "git push --follow-tags"
   },
