@@ -1,4 +1,5 @@
 // @flow strict
+/*:: import type { Readable } from 'stream'; */
 /*:: import type { HTTPHeaders, HTTPIncomingRequest } from './http'; */
 /*:: import type { RouteRequest } from './route'; */
 /*:: import type { JSONValue } from './json'; */
@@ -18,20 +19,20 @@ const getContent = (headers/*: HTTPHeaders*/)/*: Content*/ => {
   };
 };
 
-const readJSONBody = async (request/*: RouteRequest*/, content/*: Content*/)/*: Promise<JSONValue>*/ => {
-  return parse(await readStream(request.incoming, content.length));
+const readJSONBody = async (incoming/*: Readable*/, content/*: Content*/)/*: Promise<JSONValue>*/ => {
+  return parse(await readStream(incoming, content.length));
 };
-const readTextBody = async (request/*: RouteRequest*/, content/*: Content*/)/*: Promise<string>*/ => {
-  return await readStream(request.incoming, content.length);
+const readTextBody = async (incoming/*: Readable*/, content/*: Content*/)/*: Promise<string>*/ => {
+  return await readStream(incoming, content.length);
 };
 
-const readBody = async (request/*: RouteRequest*/)/*: Promise<JSONValue | string>*/ => {
-  const content = getContent(request.headers);
+const readBody = async (incoming/*: Readable*/, headers/*: HTTPHeaders*/)/*: Promise<JSONValue | string>*/ => {
+  const content = getContent(headers);
   switch (content.type) {
     case 'application/json':
-      return readJSONBody(request, content);
+      return readJSONBody(incoming, content);
     case 'text/plain':
-      return readTextBody(request, content);
+      return readTextBody(incoming, content);
     default:
     case null:
       return null;

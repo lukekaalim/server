@@ -12,7 +12,7 @@ const main = async () => {
     cache: { maxAge: 100, cacheability: 'public' },
     methods: {
       GET: () => responses.application.json(statusCodes.ok, greeting),
-      PUT: async (request) => (greeting = await readBody(request), responses.empty())
+      PUT: async (request) => (greeting = await readBody(request.incoming, request.headers), responses.empty())
     },
   };
 
