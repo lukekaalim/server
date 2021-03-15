@@ -9,7 +9,8 @@
   },
   "scripts": {
     "prepare": "cd tests; npm i --no-save; echo \"Installed test project\"",
-    "preversion": "cd tests; npm test",
+    "test": "cd tests; npm test",
+    "preversion": "npm test",
     "postversion": "git push --follow-tags"
   },
   "author": "luke kaalim (luke@kaal.im)",

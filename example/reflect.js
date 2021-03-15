@@ -13,7 +13,7 @@ const createReflectionServer = () => {
   const server = createServer(createRouteListener(createHTTPResourceRoutes({
     path: '/',
     methods: {
-      POST: (req) => createRouteResponse(ok, {}, req.incoming),
+      POST: (req) => createRouteResponse(ok, req.headers, req.incoming),
     },
   })));
   server.listen(5678, () => console.log(`http://localhost:${server.address().port}`));

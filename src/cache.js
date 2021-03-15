@@ -11,10 +11,13 @@ export type CacheOptions = {
 */
 
 const createCacheHeaders = ({ expires, cacheability, maxAge, mustRevalidate }/*: CacheOptions*/ = {})/*: HTTPHeaders*/ => {
-  const cacheControlHeader = [
+  const cacheControlDirectives = [
     cacheability,
     maxAge && `max-age=${maxAge}`
-  ].filter(Boolean).join(', ');
+  ].filter(Boolean);
+  if (cacheControlDirectives.length < 1)
+    return {};
+  const cacheControlHeader = cacheControlDirectives.join(' ,');
   return {
     'cache-control': cacheControlHeader,
   };

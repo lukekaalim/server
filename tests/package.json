@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "test": "node entry"
+    "test": "node test"
   },
   "dependencies": {
     "@lukekaalim/server": "file:..",
