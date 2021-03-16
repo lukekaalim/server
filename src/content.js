@@ -10,7 +10,7 @@ const { parse } = require("./json");
 export type Content = { type: null | string, length: null | number };
 */
 
-const getContent = (headers/*: HTTPHeaders*/)/*: Content*/ => {
+const getContent = (headers/*: HTTPHeaders*/)/*: $Exact<Content>*/ => {
   const type = headers['content-type'] || null;
   const length = headers['content-length'] ? parseInt(headers['content-length'], 10) : null;
   return {
@@ -19,10 +19,12 @@ const getContent = (headers/*: HTTPHeaders*/)/*: Content*/ => {
   };
 };
 
-const readJSONBody = async (incoming/*: Readable*/, content/*: Content*/)/*: Promise<JSONValue>*/ => {
+const readJSONBody = async (incoming/*: Readable*/, headers/*: HTTPHeaders*/)/*: Promise<JSONValue>*/ => {
+  const content = getContent(headers);
   return parse(await readStream(incoming, content.length));
 };
-const readTextBody = async (incoming/*: Readable*/, content/*: Content*/)/*: Promise<string>*/ => {
+const readTextBody = async (incoming/*: Readable*/, headers/*: HTTPHeaders*/)/*: Promise<string>*/ => {
+  const content = getContent(headers);
   return await readStream(incoming, content.length);
 };
 
@@ -30,9 +32,9 @@ const readBody = async (incoming/*: Readable*/, headers/*: HTTPHeaders*/)/*: Pro
   const content = getContent(headers);
   switch (content.type) {
     case 'application/json':
-      return readJSONBody(incoming, content);
+      return readJSONBody(incoming, headers);
     case 'text/plain':
-      return readTextBody(incoming, content);
+      return readTextBody(incoming, headers);
     default:
     case null:
       return null;
