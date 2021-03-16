@@ -9,7 +9,7 @@ export type Authorization =
   | { type: 'bearer', token: string }
 */
 
-const getAuthorization = (headers/*: HTTPHeaders*/)/*: Authorization*/ => {
+const getAuthorization = (headers/*: HTTPHeaders*/)/*: $Exact<Authorization>*/ => {
   const authorizationValue = headers['authorization'];
 
   if (!authorizationValue)
