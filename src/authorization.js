@@ -3,13 +3,13 @@
 
 /*::
 export type Authorization =
-  | { type: 'unknown', value: string }
-  | { type: 'none' }
-  | { type: 'basic', username: string, password: string }
-  | { type: 'bearer', token: string }
+  | {| type: 'unknown', value: string |}
+  | {| type: 'none' |}
+  | {| type: 'basic', username: string, password: string |}
+  | {| type: 'bearer', token: string |}
 */
 
-const getAuthorization = (headers/*: HTTPHeaders*/)/*: $Exact<Authorization>*/ => {
+const getAuthorization = (headers/*: HTTPHeaders*/)/*: Authorization*/ => {
   const authorizationValue = headers['authorization'];
 
   if (!authorizationValue)
