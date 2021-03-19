@@ -16,6 +16,8 @@ export type * from './listener';
 
 export type * from './json';
 export type * from './stream';
+export type * from './endpoint';
+export type * from './utility';
 
 */
 
@@ -33,6 +35,7 @@ module.exports = {
 
   ...require('./json'),
   ...require('./stream'),
+  ...require('./endpoint'),
 
   ...require('./utility'),
 };

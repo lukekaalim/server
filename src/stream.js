@@ -5,10 +5,9 @@ const readStream = async (stream/*: Readable*/, length/*: null | number*/)/*: Pr
   switch (typeof length) {
     case 'number':
       return await readStreamFixedLength(stream, length);
-    case 'undefined':
-      return await readStreamUnknownLength(stream);
     default:
-      throw new Error();
+    case null:
+      return await readStreamUnknownLength(stream);
   }
 };
 

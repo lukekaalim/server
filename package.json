@@ -30,5 +30,9 @@
   "bugs": {
     "url": "https://github.com/lukekaalim/server/issues"
   },
-  "homepage": "https://github.com/lukekaalim/server#readme"
+  "homepage": "https://github.com/lukekaalim/server#readme",
+  "dependencies": {
+    "@lukekaalim/api-models": "^3.0.2",
+    "@lukekaalim/cast": "^1.0.0"
+  }
 }
