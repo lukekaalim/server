@@ -9,6 +9,7 @@ export type AccessOriginOptions =
 
 export type AccessOptions = {
   origins?: AccessOriginOptions,
+  headers?: string[]
 };
 */
 
@@ -28,8 +29,10 @@ const createAllowedOrigin = (headers/*: HTTPHeaders*/, options/*: AccessOriginOp
 
 const createAccessHeaders = (headers/*: HTTPHeaders*/, access/*: AccessOptions*/ = {})/*: HTTPHeaders*/ => {
   const allowedOrigin = access.origins ? createAllowedOrigin(headers, access.origins) : null;
+  const allowedHeaders = access.headers ? access.headers.join(' ,') : null;
   return Object.fromEntries([
     allowedOrigin ? ['access-control-allow-origin', allowedOrigin] : null,
+    allowedHeaders ? ['access-control-allow-headers', allowedHeaders] : null,
   ].filter(Boolean));
 };
 
