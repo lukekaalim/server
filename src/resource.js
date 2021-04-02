@@ -30,7 +30,7 @@ export type HTTPResource = {
 
 const createHTTPResourceRoutes = (resource/*: HTTPResource*/)/*: Route[]*/ => {
   const defaultMethods/*: { [method: HTTPMethod]: RouteHandler }*/ = {
-    OPTIONS: (request) => ({ status: statusCodes.ok, body: null, headers: {} }),
+    OPTIONS: (request) => ({ status: statusCodes.noContent, body: null, headers: {} }),
   };
   const createRouteHandler = (method) => async (request) => {
     const response = await allMethods[method](request);
