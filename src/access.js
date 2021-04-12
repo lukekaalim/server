@@ -9,7 +9,8 @@ export type AccessOriginOptions =
 
 export type AccessOptions = {
   origins?: AccessOriginOptions,
-  headers?: string[]
+  headers?: string[],
+  cache?: number,
 };
 */
 
@@ -30,9 +31,12 @@ const createAllowedOrigin = (headers/*: HTTPHeaders*/, options/*: AccessOriginOp
 const createAccessHeaders = (headers/*: HTTPHeaders*/, access/*: AccessOptions*/ = {})/*: HTTPHeaders*/ => {
   const allowedOrigin = access.origins ? createAllowedOrigin(headers, access.origins) : null;
   const allowedHeaders = access.headers ? access.headers.join(' ,') : null;
+  const maxAge = access.cache || null;
   return Object.fromEntries([
     allowedOrigin ? ['access-control-allow-origin', allowedOrigin] : null,
     allowedHeaders ? ['access-control-allow-headers', allowedHeaders] : null,
+    allowedHeaders ? ['access-control-allow-headers', allowedHeaders] : null,
+    maxAge ? ['access-control-max-age', maxAge.toString()] : null,
   ].filter(Boolean));
 };
 
