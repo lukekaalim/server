@@ -22,7 +22,7 @@ jobs:
   deploy:
     working_directory: ~/repo/server
     docker:
-      - image: circleci/node:14
+      - image: circleci/node:16
     steps:
       - checkout
       - run:
