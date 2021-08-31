@@ -19,7 +19,7 @@ jobs:
             - node_modules
           key: modules-{{ checksum "package.json" }}
   test:
-    working_directory: ~/repo/tests
+    working_directory: ~/repo
     docker:
       - image: circleci/node:14
     steps:
