@@ -1,22 +1,21 @@
 // @flow strict
 /*::
-import type { HTTPIncomingRequest, HTTPOutgoingResponse } from './http';
+import type { IncomingMessage, ServerResponse } from 'http';
 import type { Route, RouteHandler, RouteResponse } from './route';
 */
-const { Readable, Stream } = require('stream');
 const { writeStream } = require('./stream');
 const { statusCodes: { internalServerError, notFound }} = require('./http');
 const { getRouteRequest, writeOutgoingResponse, respond } = require('./route')
 
 /*::
 export type HTTPListener = (
-  request: HTTPIncomingRequest,
-  response: HTTPOutgoingResponse, 
+  request: IncomingMessage,
+  response: ServerResponse, 
 ) => void;
 */
 
 const createFixedListener = (routeResponse/*: RouteResponse*/)/*: HTTPListener*/ => {
-  const listener = (req/*: HTTPIncomingRequest*/, res/*: HTTPOutgoingResponse*/) => {
+  const listener = (_, res) => {
     res.writeHead(routeResponse.status, routeResponse.headers);
     writeStream(res, routeResponse.body || null);
   };

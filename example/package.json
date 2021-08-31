@@ -2,7 +2,7 @@
   "private": true,
   "dependencies": {
     "@lukekaalim/cast": "^1.0.0",
-    "@lukekaalim/http-client": "^2.5.0",
-    "@lukekaalim/server": "file:.."
+    "@lukekaalim/http-client": "^4.0.0",
+    "@lukekaalim/server": "*"
   }
 }

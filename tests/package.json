@@ -4,7 +4,8 @@
     "test": "node test"
   },
   "dependencies": {
-    "@lukekaalim/server": "file:..",
-    "@lukekaalim/test": "^8.1.0"
+    "@lukekaalim/server": "*",
+    "@lukekaalim/test": "^8.1.0",
+    "@lukekaalim/http-client": "^4.0.0"
   }
 }

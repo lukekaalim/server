@@ -1,6 +1,7 @@
 // @flow strict
 /*::
 import type { Readable, Writable } from 'stream';
+import type { IncomingMessage, ServerResponse } from 'http';
 */
 
 /*::
@@ -84,15 +85,9 @@ export type HTTPHeaders = {
   [string]: string,
 };
 
-export type HTTPIncomingRequest = Readable & {
-  headers: HTTPHeaders,
-  url: string,
-  method: string
-};
+export type HTTPIncomingRequest = IncomingMessage;
 
-export type HTTPOutgoingResponse = Writable & $ReadOnly<{
-  writeHead: (status: number, headers?: HTTPHeaders) => void,
-}>;
+export type HTTPOutgoingResponse = ServerResponse;
 */
 
 module.exports = {

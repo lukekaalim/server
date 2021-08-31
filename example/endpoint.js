@@ -1,6 +1,6 @@
 // @flow strict
 const { createPOSTHandler, router, resource } = require('@lukekaalim/server');
-const { createNodeClient, createJSONEndpointClient } = require('@lukekaalim/http-client');
+const { createNodeClient } = require('@lukekaalim/http-client');
 const { createServer, request } = require('http');
 const { toString, toObject } = require('@lukekaalim/cast');``
 
