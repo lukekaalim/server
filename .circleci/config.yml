@@ -20,7 +20,7 @@ jobs:
           key: modules-{{ checksum "package.json" }}
       - run: npm test
   deploy:
-    working_directory: ~/repo/server
+    working_directory: ~/repo
     docker:
       - image: circleci/node:16
     steps:
@@ -28,7 +28,7 @@ jobs:
       - run:
           name: Publish package
           command: |
-            npm publish -access=public -_authToken=$NPM_PUBLISH_TOKEN
+            npm publish --workspace=server -access=public -_authToken=$NPM_PUBLISH_TOKEN
 workflows:
   version: 2
   commit:
